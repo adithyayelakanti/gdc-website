@@ -43,13 +43,21 @@ export default function Navbar() {
           }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
-          <a href="#top" className="flex items-center" aria-label="GDC Home">
-            <img
-              src="/logo/gdc-logo.png"
-              alt="GDC"
-              className="h-8 w-auto object-contain"
-            />
-          </a>
+          <div className="flex items-center gap-4">
+  <img
+    src="/logo/snist-esports-logo.png"
+    alt="SNIST Esports"
+    className="h-8 w-auto object-contain"
+  />
+
+  <a href="#top" className="flex items-center">
+    <img
+      src="/logo/gdc-logo.png"
+      alt="GDC"
+      className="h-8 w-auto object-contain"
+    />
+  </a>
+</div>
 
           <nav className="hidden items-center gap-8 md:flex">
             {LINKS.map((link) => (
