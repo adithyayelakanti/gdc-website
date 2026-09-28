@@ -5,31 +5,38 @@ const LETTERS = ['G', 'D', 'C']
 const SESSION_KEY = 'gdc-loaded'
 
 export default function Loader({ onDone }: { onDone: () => void }) {
-  const [skip] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
+  const [showLoader, setShowLoader] = useState(() => {
+    return sessionStorage.getItem(SESSION_KEY) !== '1'
+  })
+
   const [phase, setPhase] = useState<'letters' | 'bar' | 'out'>('letters')
 
   useEffect(() => {
-    if (skip) {
+    if (!showLoader) {
       onDone()
       return
     }
+
+    // Mark it immediately so another mount cannot show the loader again.
     sessionStorage.setItem(SESSION_KEY, '1')
 
     const t1 = setTimeout(() => setPhase('bar'), 500)
     const t2 = setTimeout(() => setPhase('out'), 1300)
-    const t3 = setTimeout(onDone, 1750)
+    const t3 = setTimeout(() => {
+      setShowLoader(false)
+      onDone()
+    }, 1750)
+
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
       clearTimeout(t3)
     }
-  }, [skip, onDone])
-
-  if (skip) return null
+  }, [showLoader, onDone])
 
   return (
     <AnimatePresence>
-      {phase !== 'out' && (
+      {showLoader && phase !== 'out' && (
         <motion.div
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-void"
           exit={{ opacity: 0, filter: 'brightness(3)' }}
@@ -41,7 +48,11 @@ export default function Loader({ onDone }: { onDone: () => void }) {
                 key={letter}
                 initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.4, delay: i * 0.09, ease: 'easeOut' }}
+                transition={{
+                  duration: 0.4,
+                  delay: i * 0.09,
+                  ease: 'easeOut',
+                }}
                 className="text-bone"
               >
                 {letter}
